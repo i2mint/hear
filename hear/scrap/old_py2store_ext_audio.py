@@ -1,3 +1,7 @@
+"""This module exists so that users of py2store.ext.audio (now deprecated) can rely on it.
+
+No promises that it will live forever, so switch to `hear` package as soon as you have the opportunity.
+"""
 from io import BytesIO
 from py2store.stores.local_store import LocalBinaryStore
 from py2store.trans import add_wrapper_method
