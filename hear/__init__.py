@@ -79,24 +79,59 @@ class WfSrSerializationTrans:
 
     See WavSerializationTrans for explanations and doctest examples.
     """
-    _read_format = DFLT_FORMAT
-    _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
+
+    # _read_format = DFLT_FORMAT
+    # _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
     def __init__(
-            self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
+            self,
+            dtype=DFLT_DTYPE,
+            format=DFLT_FORMAT,
+            subtype=None,
+            endian=None
     ):
-        self._read_format = format
-        self._rw_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
+        self._r_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
+        self._w_kwargs = dict(format=format, subtype=subtype, endian=endian)
 
     def _obj_of_data(self, data):
-        return sf.read(BytesIO(data), **self._rw_kwargs)
+        return sf.read(BytesIO(data), **self._r_kwargs)
 
     def _data_of_obj(self, obj):
         wf, sr = obj
         b = BytesIO()
-        sf.write(b, wf, samplerate=sr, format=self._rw_kwargs)
+        sf.write(b, wf, samplerate=sr, **self._w_kwargs)
         b.seek(0)
         return b.read()
+
+
+from typing import Optional
+
+
+@add_wrapper_method
+class WfsrToWfWithSrAssertionTrans:
+    """Asserts a fixed specified sr (if given) and returns only the wf part of the (wf, sr) data"""
+
+    def __init__(self, assert_sr: Optional[int] = None):
+        assert assert_sr is None or isinstance(assert_sr, int), f"assert_sr must be None or an integer. Was {assert_sr}"
+        self.assert_sr = assert_sr
+
+    def wfsr_to_wf_with_sr_assertion(self, wfsr):
+        wf, sr = wfsr
+        if self.assert_sr != sr:
+            if (
+                    self.assert_sr is not None
+            ):  # Putting None check here because less common, so more efficient on avg
+                raise SampleRateAssertionError(
+                    f"sr was {sr}, should be {self.assert_sr}"
+                )
+        return wf
+
+    def _obj_of_data(self, data):
+        return self.wfsr_to_wf_with_sr_assertion(data)
+
+    def _data_of_obj(self, obj):
+        assert self.assert_sr is not None, f"To write data you need to specify an assert_sr sample rate"
+        return obj, self.assert_sr
 
 
 @add_wrapper_method
@@ -129,8 +164,9 @@ class WfSerializationTrans(WfSrSerializationTrans):
         return super()._data_of_obj((obj, self.sr))
 
 
+# TODO: Make this with above elements: For example, with @WfsrToWfWithSrAssertionTrans.wrapper(assert_sr=None)
 @add_wrapper_method
-class WavSerializationTrans:
+class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans):
     r"""A wav serialization/deserialization transformer.
 
     First let's make a very short waveform.
@@ -169,10 +205,7 @@ class WavSerializationTrans:
     >>> my_wav_store['just_one']
     array([   0, 2052, 4097, 6126, 8130], dtype=int16)
 
-
     """
-    _rw_kwargs = dict(format="WAV", subtype=None, endian=None)
-    _read_kwargs = dict(dtype=DFLT_DTYPE)
 
     def __init__(
             self,
@@ -182,29 +215,16 @@ class WavSerializationTrans:
             subtype=None,
             endian=None,
     ):
-        if assert_sr is not None:
-            assert isinstance(assert_sr, int), "assert_sr must be an int"
-        self.assert_sr = assert_sr
-        self._rw_kwargs = dict(format=format, subtype=subtype, endian=endian)
-        self._read_kwargs = dict(dtype=dtype)
+        WfsrToWfWithSrAssertionTrans.__init__(self, assert_sr=assert_sr)
+        WfSrSerializationTrans.__init__(self, dtype=dtype, format=format, subtype=subtype, endian=endian)
 
     def _obj_of_data(self, data):
-        wf, sr = sf.read(BytesIO(data), **self._read_kwargs)
-        if self.assert_sr != sr:
-            if (
-                    self.assert_sr is not None
-            ):  # Putting None check here because less common, so more efficient on avg
-                raise SampleRateAssertionError(
-                    f"sr was {sr}, should be {self.assert_sr}"
-                )
-        return wf
+        wf, sr = super()._obj_of_data(data)
+        return WfsrToWfWithSrAssertionTrans._obj_of_data(self, (wf, sr))
 
     def _data_of_obj(self, obj):
-        wf = obj
-        b = BytesIO()
-        sf.write(b, wf, samplerate=self.assert_sr, **self._rw_kwargs)
-        b.seek(0)
-        return b.read()
+        wf, sr = WfsrToWfWithSrAssertionTrans._data_of_obj(self, obj)
+        return super()._data_of_obj((wf, sr))
 
 
 PcmSerializationMixin = PcmSerializationTrans  # alias for back-compatibility
