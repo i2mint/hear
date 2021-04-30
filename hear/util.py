@@ -1,4 +1,9 @@
-import soundfile as sf
+from typing import Sequence, Union, Any, Iterable, Callable
+import numpy as np
+
+Number = Union[int, float, np.number]
+Sample = Number
+Waveform = Sequence[Sample]
 
 DFLT_DTYPE = "int16"
 DFLT_FORMAT = "WAV"
@@ -37,4 +42,3 @@ class SampleRateAssertionError(ValueError):
 soundfile_signature = dict(
     dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
 )
-
