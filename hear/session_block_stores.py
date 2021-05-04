@@ -1,6 +1,6 @@
 from sortedcontainers import SortedList
 from collections.abc import Iterable, Mapping
-from functools import lru_cache
+from functools import lru_cache, cached_property
 import soundfile as sf
 from io import BytesIO
 import json
@@ -8,7 +8,7 @@ import os
 from math import ceil
 
 # from ocore.utils import utime
-from ppy.deco import lazyprop
+
 from py2store.stores.local_store import RelativePathFormatStore
 from py2store.mixins import ReadOnlyMixin, IterBasedSizedContainerMixin
 from py2store.parse_format import match_re_for_fstring
@@ -146,14 +146,14 @@ class BlocksSearchResult:
         # _sort_key is not used here, but can be used to tell SortedList how to sort keys outputed by __iter__
         self._sort_key = _sort_key
 
-    @lazyprop
+    @cached_property
     def _key_of_block(self):
         if hasattr(self._block_store, '_key_of_block'):
             return self._block_store._key_of_block
         else:
             return SortedList(self._block_store.__iter__(), self._sort_key)
 
-    @lazyprop
+    @cached_property
     def intersecting_blocks(self):
         """ Iterator of blocks that CONTAIN the [bt, tt) range """
         # TODO: Figure out the most efficient way to do this
@@ -238,7 +238,7 @@ class BlockWfStore(DictKeyMap, WfStore):
 
         self._sort_key = _sort_key
 
-    @lazyprop
+    @cached_property
     def _key_of_block(self):
         return SortedList(self.__iter__(), self._sort_key)
 
