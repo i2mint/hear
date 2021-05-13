@@ -28,11 +28,11 @@ class PcmSerializationTrans:
         sr,
         channels=DFLT_N_CHANNELS,
         dtype=DFLT_DTYPE,
-        format="RAW",
-        subtype="PCM_16",
+        format='RAW',
+        subtype='PCM_16',
         endian=None,
     ):
-        assert isinstance(sr, int), "assert_sr must be an int"
+        assert isinstance(sr, int), 'assert_sr must be an int'
         self.sr = sr
         self._rw_kwargs = dict(
             samplerate=sr,
@@ -85,7 +85,7 @@ class WfsrToWfWithSrAssertionTrans:
 
     def __init__(self, assert_sr: Optional[int] = None):
         assert assert_sr is None or isinstance(assert_sr, int), (
-            f"assert_sr must be None or an integer. Was " f"{assert_sr}"
+            f'assert_sr must be None or an integer. Was ' f'{assert_sr}'
         )
         self.assert_sr = assert_sr
 
@@ -96,7 +96,7 @@ class WfsrToWfWithSrAssertionTrans:
                 self.assert_sr is not None
             ):  # Putting None check here because less common, so more efficient on avg
                 raise SampleRateAssertionError(
-                    f"sr was {sr}, should be {self.assert_sr}"
+                    f'sr was {sr}, should be {self.assert_sr}'
                 )
         return wf
 
@@ -105,7 +105,7 @@ class WfsrToWfWithSrAssertionTrans:
 
     def _data_of_obj(self, obj):
         assert self.assert_sr is not None, (
-            f"To write data you need to specify an assert_sr " f"sample rate"
+            f'To write data you need to specify an assert_sr ' f'sample rate'
         )
         return obj, self.assert_sr
 
@@ -133,7 +133,7 @@ class WfSerializationTrans(WfSrSerializationTrans):
         wf, sr = super()._obj_of_data(data)
         if self.assert_sr is not None and sr != self.assert_sr:
             raise SampleRateAssertionError(
-                f"{self.assert_sr} expected but I encountered {sr}"
+                f'{self.assert_sr} expected but I encountered {sr}'
             )
         return wf
 
@@ -198,7 +198,7 @@ class WavSerializationTrans(
         self,
         assert_sr=None,
         dtype=DFLT_DTYPE,
-        format="WAV",
+        format='WAV',
         subtype=None,
         endian=None,
     ):
@@ -229,7 +229,7 @@ class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
         assert_sr=None,
         max_levels=None,
         dtype=DFLT_DTYPE,
-        format="WAV",
+        format='WAV',
         subtype=None,
         endian=None,
     ):
@@ -251,7 +251,7 @@ from dol import filt_iter
 
 
 def has_wav_extension(string):
-    return string.endswith(".wav") and not string.startswith("__MACOSX/")
+    return string.endswith('.wav') and not string.startswith('__MACOSX/')
 
 
 @filt_iter(filt=has_wav_extension)
@@ -316,11 +316,11 @@ def _length_and_sr_of_wavs(z):
 
     def gen():
         for k, (wf, sr) in z.items():
-            yield {"file": k, "n_samples": len(wf), "sr": sr}
+            yield {'file': k, 'n_samples': len(wf), 'sr': sr}
 
     df = pd.DataFrame(list(gen()))
-    df = df.set_index("file")
-    df["duration_s"] = df["n_samples"] / df["sr"]
+    df = df.set_index('file')
+    df['duration_s'] = df['n_samples'] / df['sr']
     return df
 
 
@@ -333,13 +333,13 @@ class PcmSourceSessionBlockStore(MakeMissingDirsStoreMixin, LocalBinaryStore):
     path_depth = 3
 
     def _id_of_key(self, k):
-        raise DeprecationWarning("Deprecated")
+        raise DeprecationWarning('Deprecated')
         assert len(k) == self.path_depth
         return super()._id_of_key(
-            self.sep.join(self.path_depth * ["{}"]).format(*k)
+            self.sep.join(self.path_depth * ['{}']).format(*k)
         )
 
     def _key_of_id(self, _id):
-        raise DeprecationWarning("Deprecated")
+        raise DeprecationWarning('Deprecated')
         key = super()._key_of_id(_id)
         return tuple(key.split(self.sep))

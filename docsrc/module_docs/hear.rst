@@ -1,0 +1,4 @@
+hear
+====
+.. automodule:: hear
+   :members:
