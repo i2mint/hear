@@ -11,11 +11,15 @@ AudioSource = Any
 
 
 @lru_cache(maxsize=1)
-def src_to_wf_and_indexer(src: AudioSource, index_to_seconds_scale, index_to_seconds_offset, src_to_wfsr):
+def src_to_wf_and_indexer(
+    src: AudioSource,
+    index_to_seconds_scale,
+    index_to_seconds_offset,
+    src_to_wfsr,
+):
     wf, sr = src_to_wfsr(src)
     indexer = AffineConverter(
-        scale=sr * index_to_seconds_scale,
-        offset=index_to_seconds_offset
+        scale=sr * index_to_seconds_scale, offset=index_to_seconds_offset
     )
     return wf, indexer
 
@@ -36,6 +40,7 @@ class AudioSegments:
 
     ```
     """
+
     src_to_wfsr: Callable[[AudioSource], Waveform] = sf.read
     index_to_seconds_scale: Number = 1
     index_to_seconds_offset: Number = 0
@@ -47,7 +52,7 @@ class AudioSegments:
             src,
             index_to_seconds_scale=self.index_to_seconds_scale,
             index_to_seconds_offset=self.index_to_seconds_offset,
-            src_to_wfsr=self.src_to_wfsr
+            src_to_wfsr=self.src_to_wfsr,
         )
         bt, tt = _slice.start, _slice.stop
         if bt is not None:

@@ -1,6 +1,6 @@
 from io import BytesIO
 from py2store.stores.local_store import LocalBinaryStore
-from py2store.trans import add_wrapper_method
+from dol.trans import add_wrapper_method
 
 import soundfile as sf
 
@@ -8,7 +8,7 @@ from hear.util import (
     DFLT_DTYPE,
     DFLT_FORMAT,
     DFLT_N_CHANNELS,
-    SampleRateAssertionError
+    SampleRateAssertionError,
 )
 
 
@@ -21,13 +21,13 @@ class ReadAudioFileMixin:
 
 class PcmSerializationTrans:
     def __init__(
-            self,
-            sr,
-            channels=DFLT_N_CHANNELS,
-            dtype=DFLT_DTYPE,
-            format="RAW",
-            subtype="PCM_16",
-            endian=None,
+        self,
+        sr,
+        channels=DFLT_N_CHANNELS,
+        dtype=DFLT_DTYPE,
+        format="RAW",
+        subtype="PCM_16",
+        endian=None,
     ):
         assert isinstance(sr, int), "assert_sr must be an int"
         self.sr = sr
@@ -46,7 +46,8 @@ class PcmSerializationTrans:
 
 @add_wrapper_method
 class WfSrSerializationTrans:
-    """An audio serialization/deserialization transformer object whose external objects are (waveform, sample_rate)
+    """An audio serialization/deserialization transformer object whose external objects are (
+    waveform, sample_rate)
     pairs, and internal data some bytes-encoding of the latter.
 
     See WavSerializationTrans for explanations and doctest examples.
@@ -56,11 +57,7 @@ class WfSrSerializationTrans:
     # _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
     def __init__(
-            self,
-            dtype=DFLT_DTYPE,
-            format=DFLT_FORMAT,
-            subtype=None,
-            endian=None
+        self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
     ):
         self._r_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
         self._w_kwargs = dict(format=format, subtype=subtype, endian=endian)
@@ -84,14 +81,16 @@ class WfsrToWfWithSrAssertionTrans:
     """Asserts a fixed specified sr (if given) and returns only the wf part of the (wf, sr) data"""
 
     def __init__(self, assert_sr: Optional[int] = None):
-        assert assert_sr is None or isinstance(assert_sr, int), f"assert_sr must be None or an integer. Was {assert_sr}"
+        assert assert_sr is None or isinstance(assert_sr, int), (
+            f"assert_sr must be None or an integer. Was " f"{assert_sr}"
+        )
         self.assert_sr = assert_sr
 
     def wfsr_to_wf_with_sr_assertion(self, wfsr):
         wf, sr = wfsr
         if self.assert_sr != sr:
             if (
-                    self.assert_sr is not None
+                self.assert_sr is not None
             ):  # Putting None check here because less common, so more efficient on avg
                 raise SampleRateAssertionError(
                     f"sr was {sr}, should be {self.assert_sr}"
@@ -102,24 +101,27 @@ class WfsrToWfWithSrAssertionTrans:
         return self.wfsr_to_wf_with_sr_assertion(data)
 
     def _data_of_obj(self, obj):
-        assert self.assert_sr is not None, f"To write data you need to specify an assert_sr sample rate"
+        assert self.assert_sr is not None, (
+            f"To write data you need to specify an assert_sr " f"sample rate"
+        )
         return obj, self.assert_sr
 
 
 @add_wrapper_method
 class WfSerializationTrans(WfSrSerializationTrans):
-    """An audio serializatiobn object like WfSrSerializationTrans, but working with waveforms only (sample rate fixed).
+    """An audio serializatiobn object like WfSrSerializationTrans, but working with waveforms
+    only (sample rate fixed).
 
     See WavSerializationTrans for explanations and doctest examples.
     """
 
     def __init__(
-            self,
-            assert_sr=None,
-            dtype=DFLT_DTYPE,
-            format=DFLT_FORMAT,
-            subtype=None,
-            endian=None,
+        self,
+        assert_sr=None,
+        dtype=DFLT_DTYPE,
+        format=DFLT_FORMAT,
+        subtype=None,
+        endian=None,
     ):
         super().__init__(dtype, format, subtype, endian)
         self.assert_sr = assert_sr
@@ -136,9 +138,12 @@ class WfSerializationTrans(WfSrSerializationTrans):
         return super()._data_of_obj((obj, self.sr))
 
 
-# TODO: Make this with above elements: For example, with @WfsrToWfWithSrAssertionTrans.wrapper(assert_sr=None)
+# TODO: Make this with above elements: For example, with @WfsrToWfWithSrAssertionTrans.wrapper(
+#  assert_sr=None)
 @add_wrapper_method
-class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans):
+class WavSerializationTrans(
+    WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
+):
     r"""A wav serialization/deserialization transformer.
 
     First let's make a very short waveform.
@@ -150,10 +155,15 @@ class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
     array([0.        , 0.06264832, 0.12505052, 0.18696144, 0.24813785])
 
     An instance of ``WavSerializationTrans`` will allow you to
-    >>> trans = WavSerializationTrans(assert_sr=sr)  # if you want to write data you NEED to specify assert_sr
+
+    >>> trans = WavSerializationTrans(assert_sr=sr)
+
+    If you want to write data you NEED to specify assert_sr
+
     >>> wav_bytes = trans._data_of_obj(wf)
     >>> wav_bytes[:44]  # the header bytes
     b'RIFF.\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00D\xac\x00\x00\x88X\x01\x00\x02\x00\x10\x00data\n\x00\x00\x00'
+
     >>> wav_bytes[44:]  # the data bytes (5 * 2 = 10 bytes)
     b'\x00\x00\x04\x08\x01\x10\xee\x17\xc2\x1f'
 
@@ -163,11 +173,13 @@ class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
 
     Note that we've serialized floats, but they were deserialized as int16.
     This is the default behavior, but is cusomizable through dtype, subtype, etc.
-    With this default dtype=int16 setting though, if you serialize int16 arrays, you'll recover them exactly.
+    With this default dtype=int16 setting though, if you serialize int16 arrays, you'll recover
+    them exactly.
 
     >>> assert all(trans._obj_of_data(trans._data_of_obj(wf_read_from_bytes)) == wf_read_from_bytes)
 
-    The most common use of WavSerializationTrans through, is to make a class decorator for a store that
+    The most common use of WavSerializationTrans through, is to make a class decorator for a
+    store that
     provides wav bytes.
 
     >>> @WavSerializationTrans.wrapper(assert_sr=sr)
@@ -180,15 +192,17 @@ class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
     """
 
     def __init__(
-            self,
-            assert_sr=None,
-            dtype=DFLT_DTYPE,
-            format="WAV",
-            subtype=None,
-            endian=None,
+        self,
+        assert_sr=None,
+        dtype=DFLT_DTYPE,
+        format="WAV",
+        subtype=None,
+        endian=None,
     ):
         WfsrToWfWithSrAssertionTrans.__init__(self, assert_sr=assert_sr)
-        WfSrSerializationTrans.__init__(self, dtype=dtype, format=format, subtype=subtype, endian=endian)
+        WfSrSerializationTrans.__init__(
+            self, dtype=dtype, format=format, subtype=subtype, endian=endian
+        )
 
     def _obj_of_data(self, data):
         wf, sr = super()._obj_of_data(data)
@@ -207,14 +221,14 @@ WfSerializationMixin = WfSerializationTrans  # alias for back-compatibility
 
 class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
     def __init__(
-            self,
-            path_format,
-            assert_sr=None,
-            max_levels=None,
-            dtype=DFLT_DTYPE,
-            format="WAV",
-            subtype=None,
-            endian=None,
+        self,
+        path_format,
+        assert_sr=None,
+        max_levels=None,
+        dtype=DFLT_DTYPE,
+        format="WAV",
+        subtype=None,
+        endian=None,
     ):
         LocalBinaryStore.__init__(self, path_format, max_levels)
         WavSerializationTrans.__init__(
@@ -229,11 +243,12 @@ class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
 
 WavLocalFileStore2 = WavLocalFileStore  # back-compatibility alias
 
-from py2store import FilesOfZip, filt_iter
+from py2store.slib.s_zipfile import FilesOfZip, ZipStore
+from dol import filt_iter
 
 
 def has_wav_extension(string):
-    return string.endswith('.wav') and not string.startswith('__MACOSX/')
+    return string.endswith(".wav") and not string.startswith("__MACOSX/")
 
 
 @filt_iter(filt=has_wav_extension)
@@ -246,13 +261,48 @@ class ZipOfWavs(FilesOfZip):
     ... class WfOfZipOfWavs(ZipOfWavs):
     ...     pass
     """
+
     pass
 
 
 @WfSrSerializationTrans.wrapper()
 class WfSrOfZipOfWavs(ZipOfWavs):
     """A KvReader that provides the (wf, sr) pairs of the .wav files in a zip file"""
+
     pass
+
+
+@WfSrSerializationTrans.wrapper()
+class WfsrZipStore(ZipStore):
+    """Read and write (waveform, sample_rate) pairs in a zip file's files.
+
+    >>> from tempfile import gettempdir
+    >>> import os
+    >>>
+    >>> rootdir = gettempdir()
+    >>>
+    >>> # preparation
+    >>> test_zipfile = os.path.join(rootdir, 'zipstore_test_file.zip')
+    >>> if os.path.isfile(test_zipfile):
+    ...     os.remove(test_zipfile)
+    >>> assert not os.path.isfile(test_zipfile)
+
+    Okay, test_zipfile doesn't exist (but will soon...)
+
+    >>> z = WfsrZipStore(test_zipfile)
+
+    See that the file still doesn't exist (it will only be created when we start writing)
+
+    >>> assert not os.path.isfile(test_zipfile)
+    >>> list(z)  # z "is" empty (which makes sense?)
+    []
+    >>> import numpy as np
+    >>> z['foo.wav'] = (np.array([0, 1, -2, 3], np.int16), 44100)
+    >>> list(z)
+    ['foo.wav']
+    >>> z['foo.wav']
+    (array([ 0,  1, -2,  3], dtype=int16), 44100)
+    """
 
 
 def _length_and_sr_of_wavs(z):
@@ -260,13 +310,14 @@ def _length_and_sr_of_wavs(z):
     Note: Don't depend on this yet -- it's in motion.
     """
     import pandas as pd
+
     def gen():
         for k, (wf, sr) in z.items():
-            yield {'file': k, 'n_samples': len(wf), 'sr': sr}
+            yield {"file": k, "n_samples": len(wf), "sr": sr}
 
     df = pd.DataFrame(list(gen()))
-    df = df.set_index('file')
-    df['duration_s'] = df['n_samples'] / df['sr']
+    df = df.set_index("file")
+    df["duration_s"] = df["n_samples"] / df["sr"]
     return df
 
 

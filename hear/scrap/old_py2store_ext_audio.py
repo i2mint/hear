@@ -53,13 +53,13 @@ class ReadAudioFileMixin:
 
 class PcmSerializationTrans:
     def __init__(
-            self,
-            sr,
-            channels=DFLT_N_CHANNELS,
-            dtype=DFLT_DTYPE,
-            format="RAW",
-            subtype="PCM_16",
-            endian=None,
+        self,
+        sr,
+        channels=DFLT_N_CHANNELS,
+        dtype=DFLT_DTYPE,
+        format="RAW",
+        subtype="PCM_16",
+        endian=None,
     ):
         assert isinstance(sr, int), "assert_sr must be an int"
         self.sr = sr
@@ -83,11 +83,12 @@ class WfSrSerializationTrans:
 
     See WavSerializationTrans for explanations and doctest examples.
     """
+
     _read_format = DFLT_FORMAT
     _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
     def __init__(
-            self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
+        self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
     ):
         self._read_format = format
         self._rw_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
@@ -111,12 +112,12 @@ class WfSerializationTrans(WfSrSerializationTrans):
     """
 
     def __init__(
-            self,
-            assert_sr=None,
-            dtype=DFLT_DTYPE,
-            format=DFLT_FORMAT,
-            subtype=None,
-            endian=None,
+        self,
+        assert_sr=None,
+        dtype=DFLT_DTYPE,
+        format=DFLT_FORMAT,
+        subtype=None,
+        endian=None,
     ):
         super().__init__(dtype, format, subtype, endian)
         self.assert_sr = assert_sr
@@ -179,12 +180,12 @@ class WavSerializationTrans:
     _read_kwargs = dict(dtype=DFLT_DTYPE)
 
     def __init__(
-            self,
-            assert_sr=None,
-            dtype=DFLT_DTYPE,
-            format="WAV",
-            subtype=None,
-            endian=None,
+        self,
+        assert_sr=None,
+        dtype=DFLT_DTYPE,
+        format="WAV",
+        subtype=None,
+        endian=None,
     ):
         if assert_sr is not None:
             assert isinstance(assert_sr, int), "assert_sr must be an int"
@@ -196,7 +197,7 @@ class WavSerializationTrans:
         wf, sr = sf.read(BytesIO(data), **self._read_kwargs)
         if self.assert_sr != sr:
             if (
-                    self.assert_sr is not None
+                self.assert_sr is not None
             ):  # Putting None check here because less common, so more efficient on avg
                 raise SampleRateAssertionError(
                     f"sr was {sr}, should be {self.assert_sr}"
@@ -219,14 +220,14 @@ WfSerializationMixin = WfSerializationTrans  # alias for back-compatibility
 
 class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
     def __init__(
-            self,
-            path_format,
-            assert_sr=None,
-            max_levels=None,
-            dtype=DFLT_DTYPE,
-            format="WAV",
-            subtype=None,
-            endian=None,
+        self,
+        path_format,
+        assert_sr=None,
+        max_levels=None,
+        dtype=DFLT_DTYPE,
+        format="WAV",
+        subtype=None,
+        endian=None,
     ):
         LocalBinaryStore.__init__(self, path_format, max_levels)
         WavSerializationTrans.__init__(
@@ -245,7 +246,7 @@ from py2store import FilesOfZip, filt_iter
 
 
 def has_wav_extension(string):
-    return string.endswith('.wav') and not string.startswith('__MACOSX/')
+    return string.endswith(".wav") and not string.startswith("__MACOSX/")
 
 
 @filt_iter(filt=has_wav_extension)
@@ -258,12 +259,14 @@ class ZipOfWavs(FilesOfZip):
     ... class WfOfZipOfWavs(ZipOfWavs):
     ...     pass
     """
+
     pass
 
 
 @WfSrSerializationTrans.wrapper()
 class WfSrOfZipOfWavs(ZipOfWavs):
     """A KvReader that provides the (wf, sr) pairs of the .wav files in a zip file"""
+
     pass
 
 
@@ -272,13 +275,14 @@ def _length_and_sr_of_wavs(z):
     Note: Don't depend on this yet -- it's in motion.
     """
     import pandas as pd
+
     def gen():
         for k, (wf, sr) in z.items():
-            yield {'file': k, 'n_samples': len(wf), 'sr': sr}
+            yield {"file": k, "n_samples": len(wf), "sr": sr}
 
     df = pd.DataFrame(list(gen()))
-    df = df.set_index('file')
-    df['duration_s'] = df['n_samples'] / df['sr']
+    df = df.set_index("file")
+    df["duration_s"] = df["n_samples"] / df["sr"]
     return df
 
 

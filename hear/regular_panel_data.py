@@ -17,13 +17,13 @@ class WrongSerializationParams(ValueError):
 
 
 def mk_reader_and_writer(
-        sr: int,
-        format="RAW",
-        subtype="PCM_16",
-        dtype="int16",
-        channels: int = 1,
-        endian=None,
-        always_2d=False,
+    sr: int,
+    format="RAW",
+    subtype="PCM_16",
+    dtype="int16",
+    channels: int = 1,
+    endian=None,
+    always_2d=False,
 ):
     """Makes a (bijective) pair of numerical arrays serializer and deserializer functions.
     A function returning bijective panel data reader and writer functions with simple interfaces (all parametrizations
@@ -120,7 +120,7 @@ def _test_data_write_read(data, writer, reader):
 
 
 def _random_matrix(
-        n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
+    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
 ):
     """
     Make a random matrix with n_samples rows and n_channels columns, with numbers drawn randomly from
@@ -141,8 +141,8 @@ def _random_matrix(
         interval_length = value_range[1] - value_range[0]
 
     data = (
-                   np.random.rand(n_samples, n_channels) * interval_length
-           ) + value_range[0]
+        np.random.rand(n_samples, n_channels) * interval_length
+    ) + value_range[0]
 
     if n_channels == 1:
         data = np.ravel(data)
@@ -151,7 +151,7 @@ def _random_matrix(
 
 
 def _random_data_and_serialization_params(
-        n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
+    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
 ):
     """ Get random data and serialization params (i.e. how to map to bytes)"""
     raise NotImplementedError("Not implemented yet")
