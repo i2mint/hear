@@ -1,3 +1,6 @@
+"""
+Useful stores (dols; Data Object Layers) for audio storage management.
+"""
 from io import BytesIO
 from py2store.stores.local_store import LocalBinaryStore
 from dol.trans import add_wrapper_method

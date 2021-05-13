@@ -1,4 +1,5 @@
-"""Serialization for regular panel data (audio, regular-tick time-series, etc.).
+"""
+Serialization for regular panel data (audio, regular-tick time-series, etc.).
 """
 
 import numpy as np

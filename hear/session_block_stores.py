@@ -1,3 +1,7 @@
+"""
+Stores that specialize in block storage;
+That is, where continuous signal is stored over multiple blocks of data.
+"""
 from sortedcontainers import SortedList
 from collections.abc import Iterable, Mapping
 from functools import lru_cache, cached_property

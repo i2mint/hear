@@ -1,3 +1,6 @@
+"""
+hear utilities
+"""
 from typing import Sequence, Union, Any, Iterable, Callable
 import numpy as np
 

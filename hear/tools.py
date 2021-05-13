@@ -1,3 +1,6 @@
+"""
+Some useful tools for audio manipulation
+"""
 from typing import Callable, Any
 from functools import lru_cache
 from dataclasses import dataclass
