@@ -38,8 +38,16 @@ soundfile_signature = dict(
 )
 
 
-class SampleRateAssertionError(ValueError):
-    ...
+class SampleRateError(ValueError):
+    """Error raised when something is wrong regarding the sample rate (sr)."""
+
+
+class SampleRateAssertionError(SampleRateError):
+    """Error raised when a sample rate's value is not the one that is expected/enforced."""
+
+
+class SampleRateMissing(SampleRateError):
+    """Error raised when a sample rate is missing (and might be required)."""
 
 
 soundfile_signature = dict(

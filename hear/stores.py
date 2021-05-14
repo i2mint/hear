@@ -12,6 +12,7 @@ from hear.util import (
     DFLT_FORMAT,
     DFLT_N_CHANNELS,
     SampleRateAssertionError,
+    SampleRateMissing,
 )
 
 
@@ -59,9 +60,7 @@ class WfSrSerializationTrans:
     # _read_format = DFLT_FORMAT
     # _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
-    def __init__(
-        self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
-    ):
+    def __init__(self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None):
         self._r_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
         self._w_kwargs = dict(format=format, subtype=subtype, endian=endian)
 
@@ -104,15 +103,16 @@ class WfsrToWfWithSrAssertionTrans:
         return self.wfsr_to_wf_with_sr_assertion(data)
 
     def _data_of_obj(self, obj):
-        assert self.assert_sr is not None, (
-            f"To write data you need to specify an assert_sr " f"sample rate"
-        )
+        if self.assert_sr is None:
+            raise SampleRateMissing(
+                f"To write data you need to specify an assert_sr sample rate"
+            )
         return obj, self.assert_sr
 
 
 @add_wrapper_method
 class WfSerializationTrans(WfSrSerializationTrans):
-    """An audio serializatiobn object like WfSrSerializationTrans, but working with waveforms
+    """An audio serialization object like WfSrSerializationTrans, but working with waveforms
     only (sample rate fixed).
 
     See WavSerializationTrans for explanations and doctest examples.
@@ -138,15 +138,17 @@ class WfSerializationTrans(WfSrSerializationTrans):
         return wf
 
     def _data_of_obj(self, obj):
-        return super()._data_of_obj((obj, self.sr))
+        if self.assert_sr is None:
+            raise SampleRateMissing(
+                f"To write data you need to specify an assert_sr sample rate"
+            )
+        return super()._data_of_obj((obj, self.assert_sr))
 
 
-# TODO: Make this with above elements: For example, with @WfsrToWfWithSrAssertionTrans.wrapper(
-#  assert_sr=None)
+# TODO: Make this with above elements:
+#  For example, with @WfsrToWfWithSrAssertionTrans.wrapper(assert_sr=None)
 @add_wrapper_method
-class WavSerializationTrans(
-    WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
-):
+class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans):
     r"""A wav serialization/deserialization transformer.
 
     First let's make a very short waveform.
@@ -335,9 +337,7 @@ class PcmSourceSessionBlockStore(MakeMissingDirsStoreMixin, LocalBinaryStore):
     def _id_of_key(self, k):
         raise DeprecationWarning("Deprecated")
         assert len(k) == self.path_depth
-        return super()._id_of_key(
-            self.sep.join(self.path_depth * ["{}"]).format(*k)
-        )
+        return super()._id_of_key(self.sep.join(self.path_depth * ["{}"]).format(*k))
 
     def _key_of_id(self, _id):
         raise DeprecationWarning("Deprecated")
