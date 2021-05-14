@@ -19,9 +19,9 @@ class WrongSerializationParams(ValueError):
 
 def mk_reader_and_writer(
     sr: int,
-    format="RAW",
-    subtype="PCM_16",
-    dtype="int16",
+    format='RAW',
+    subtype='PCM_16',
+    dtype='int16',
     channels: int = 1,
     endian=None,
     always_2d=False,
@@ -62,12 +62,12 @@ def mk_reader_and_writer(
     """
     if not sf.check_format(format, subtype, endian):
         raise WrongSerializationParams(
-            f"Not a valid combo: format={format}, subtype={subtype}, endian={endian}"
+            f'Not a valid combo: format={format}, subtype={subtype}, endian={endian}'
         )
 
     subtype = subtype or sf.default_subtype(format)
 
-    if format == "RAW":
+    if format == 'RAW':
 
         def read(k):
             wf, _ = sf.read(
@@ -88,7 +88,7 @@ def mk_reader_and_writer(
             wf, sr_read = sf.read(k, dtype=dtype, always_2d=always_2d)
             if sr != sr_read:
                 raise WrongSampleRate(
-                    f"Sample rate was {sr_read}: Expected {sr}"
+                    f'Sample rate was {sr_read}: Expected {sr}'
                 )
             return wf
 
@@ -116,12 +116,12 @@ def _test_data_write_read(data, writer, reader):
     read_data = reader(b)
     if isinstance(read_data, tuple):
         read_data, read_sr = read_data
-    assert np.allclose(read_data, data), "np.allclose(read_data, data)"
+    assert np.allclose(read_data, data), 'np.allclose(read_data, data)'
     # assert read_sr == sr, 'read_sr == sr'
 
 
 def _random_matrix(
-    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
+    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype='float64'
 ):
     """
     Make a random matrix with n_samples rows and n_channels columns, with numbers drawn randomly from
@@ -152,38 +152,38 @@ def _random_matrix(
 
 
 def _random_data_and_serialization_params(
-    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype="float64"
+    n_samples=100, n_channels=1, value_range=(-2000, 2000), dtype='float64'
 ):
     """ Get random data and serialization params (i.e. how to map to bytes)"""
-    raise NotImplementedError("Not implemented yet")
+    raise NotImplementedError('Not implemented yet')
 
 
-if __name__ == "__main__":
-    n_channels, dtype = 1, "float64"
+if __name__ == '__main__':
+    n_channels, dtype = 1, 'float64'
     read, write = mk_reader_and_writer(
         sr=44100,
         channels=n_channels,
-        subtype="FLOAT",
-        format="RAW",
+        subtype='FLOAT',
+        format='RAW',
         dtype=dtype,
     )
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
 
-    n_channels, dtype = 1, "int16"
+    n_channels, dtype = 1, 'int16'
     read, write = mk_reader_and_writer(
         sr=44100,
         channels=n_channels,
-        subtype="PCM_16",
-        format="RAW",
+        subtype='PCM_16',
+        format='RAW',
         dtype=dtype,
     )
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
 
-    n_channels, dtype = 1024, "float32"
+    n_channels, dtype = 1024, 'float32'
     read, write = mk_reader_and_writer(
-        sr=10, channels=n_channels, subtype="FLOAT", format="RAW", dtype=dtype
+        sr=10, channels=n_channels, subtype='FLOAT', format='RAW', dtype=dtype
     )
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
@@ -192,7 +192,7 @@ if __name__ == "__main__":
         2 ** 10 - 1
     )  # one more would be too much for format='WAV'
     read, write = mk_reader_and_writer(
-        sr=1, channels=n_channels, subtype="FLOAT", format="WAV"
+        sr=1, channels=n_channels, subtype='FLOAT', format='WAV'
     )
     data = _random_matrix(n_channels=n_channels)
     _test_data_write_read(data, writer=write, reader=read)

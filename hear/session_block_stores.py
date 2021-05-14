@@ -30,11 +30,11 @@ class LocalPathStore(ReadOnlyMixin, RelativePathFormatStore):
 def wf_of_block_bytes(block_bytes, sr):
     return sf.read(
         BytesIO(block_bytes),
-        dtype="int16",
+        dtype='int16',
         channels=1,
         samplerate=sr,
-        format="RAW",
-        subtype="PCM_16",
+        format='RAW',
+        subtype='PCM_16',
     )[0]
 
 
@@ -49,9 +49,9 @@ class SessionBlockStore(LocalPathStore):
     def __init__(self, channel_data_dir, sr=None, **kwargs):
         # figuring out the sample rate
         channel_store = LocalPathStore(channel_data_dir)
-        if "config.json" in channel_store:
-            config = json.loads(channel_store["config.json"])
-            self.sr = int(config.get("sr", sr))
+        if 'config.json' in channel_store:
+            config = json.loads(channel_store['config.json'])
+            self.sr = int(config.get('sr', sr))
         else:
             self.sr = sr
         assert (
@@ -66,7 +66,7 @@ class SessionBlockStore(LocalPathStore):
         # a regular expression that can be used to extract information from our keys.
         # See the get_session_and_block for how it can be used.
         path_format = os.path.join(
-            channel_data_dir, "s/{session:16d}/b/{block:16d}"
+            channel_data_dir, 's/{session:16d}/b/{block:16d}'
         )
         self._path_match_re = match_re_for_fstring(path_format)
 
@@ -77,8 +77,9 @@ class SessionBlockStore(LocalPathStore):
         m = self._path_match_re.search(self._id_of_key(k))
         if m:
             d = m.groupdict()
-            return int_if_not_none(d.get("session", None)), int_if_not_none(
-                d.get("block", None)
+            return (
+                int_if_not_none(d.get('session', None)),
+                int_if_not_none(d.get('block', None)),
             )
         else:
             return None, None
@@ -86,7 +87,7 @@ class SessionBlockStore(LocalPathStore):
 
 class WfStore(SessionBlockStore):
     def __init__(self, channel_data_dir, sr=None):
-        super().__init__(channel_data_dir=channel_data_dir, sr=sr, read="b")
+        super().__init__(channel_data_dir=channel_data_dir, sr=sr, read='b')
 
     def __getitem__(self, k):
         block_bytes = super().__getitem__(k)  # the raw bytes
@@ -99,8 +100,8 @@ class TxyzStore(SessionBlockStore):
         import pandas as pd
 
         return pd.DataFrame(
-            list(map(json.loads, filter(None, data.split("\n"))))
-        ).set_index("timestamp")
+            list(map(json.loads, filter(None, data.split('\n'))))
+        ).set_index('timestamp')
 
     def __init__(self, channel_data_dir, sr=None):
         super().__init__(channel_data_dir=channel_data_dir, sr=sr)
@@ -122,7 +123,7 @@ class DictKeyMap:
         return self.__key_of_id(super()._key_of_id(_id))
 
 
-inf = float("infinity")
+inf = float('infinity')
 
 
 # TODO: The class below isn't general at all. It assumes, for instance microseconds blocks.
@@ -174,7 +175,7 @@ class BlocksSearchResult:
 
     @cached_property
     def _key_of_block(self):
-        if hasattr(self._block_store, "_key_of_block"):
+        if hasattr(self._block_store, '_key_of_block'):
             return self._block_store._key_of_block
         else:
             return SortedList(self._block_store.__iter__(), self._sort_key)
@@ -211,7 +212,7 @@ class BlocksSearchResult:
 
     def items(self):
         samples_per_ts_unit = self.sr / self.time_units_per_sec
-        assert self.bt < self.tt, "you entered a bt >= tt"
+        assert self.bt < self.tt, 'you entered a bt >= tt'
 
         ts_gen = iter(self.intersecting_blocks)
         # getting the first block
@@ -309,7 +310,7 @@ class SessionStore(LocalPathStore):
         session_dir,
         time_units_per_sec=DFLT_TIME_UNITS_PER_SEC,
         csv_timestamp_time_units_per_sec=int(1e3),
-        rel_path_format="{session:13d}/t/tags{csv_timestamp:13d}.csv",
+        rel_path_format='{session:13d}/t/tags{csv_timestamp:13d}.csv',
         sr=None,
         **kwargs
     ):
@@ -355,7 +356,7 @@ class ScoopAnnotationsStore(SessionStore):
     def __getitem__(self, k):
         v = super().__getitem__(k)
         df = self.df_of_csv(v)
-        csv_timestamp = self.key_info(k).get("csv_timestamp", None)
+        csv_timestamp = self.key_info(k).get('csv_timestamp', None)
         if csv_timestamp is None:
             raise ValueError("Couldn't parse out the csv's timestamp.")
         csv_timestamp = int(
@@ -363,9 +364,9 @@ class ScoopAnnotationsStore(SessionStore):
             * self.time_units_per_sec
             / self.csv_timestamp_time_units_per_sec
         )
-        df["bt"] = csv_timestamp + df["bt"] * self.time_units_per_sec
-        df["tt"] = csv_timestamp + df["tt"] * self.time_units_per_sec
-        df = df.sort_values(["bt", "tt"])
+        df['bt'] = csv_timestamp + df['bt'] * self.time_units_per_sec
+        df['tt'] = csv_timestamp + df['tt'] * self.time_units_per_sec
+        df = df.sort_values(['bt', 'tt'])
         return df
 
 
@@ -376,7 +377,7 @@ class ScoopAnnotations:
         store = ScoopAnnotationsStore(annotations_dir)
         self._store = store
         self.annots_df = pd.concat(list(store.values())).sort_values(
-            ["bt", "tt"]
+            ['bt', 'tt']
         )
         self.annots_df = self.annots_df.reset_index(drop=True)
 
@@ -384,8 +385,8 @@ class ScoopAnnotations:
         if not isinstance(k, slice):
             k = slice(k)
         df = self.annots_df
-        return df[(df["bt"] >= k.start) & (df["tt"] < k.stop)].to_dict(
-            orient="rows"
+        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(
+            orient='rows'
         )
 
 
