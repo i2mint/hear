@@ -4,6 +4,8 @@ Useful stores (dols; Data Object Layers) for audio storage management.
 from io import BytesIO
 from py2store.stores.local_store import LocalBinaryStore
 from dol.trans import add_wrapper_method
+from dol.signatures import Sig, call_forgivingly
+
 
 import soundfile as sf
 
@@ -304,6 +306,59 @@ class WfsrZipStore(ZipStore):
     >>> z['foo.wav']
     (array([ 0,  1, -2,  3], dtype=int16), 44100)
     """
+
+
+# TODO: Need to give init access to assert_sr (and more?)
+@WfSerializationTrans.wrapper()
+class WfZipStore(ZipStore):
+    """Read and write waveforms in a zip file's files.
+
+    # >>> from tempfile import gettempdir
+    # >>> import os
+    # >>>
+    # >>> rootdir = gettempdir()
+    # >>>
+    # >>> # preparation
+    # >>> test_zipfile = os.path.join(rootdir, 'zipstore_test_file.zip')
+    # >>> if os.path.isfile(test_zipfile):
+    # ...     os.remove(test_zipfile)
+    # >>> assert not os.path.isfile(test_zipfile)
+    #
+    # Okay, test_zipfile doesn't exist (but will soon...)
+    #
+    # >>> z = WfZipStore(test_zipfile, assert_sr=44100)
+    #
+    # See that the file still doesn't exist (it will only be created when we start writing)
+    #
+    # >>> assert not os.path.isfile(test_zipfile)
+    # >>> list(z)  # z "is" empty (which makes sense?)
+    # []
+    # >>> import numpy as np
+    # >>> z['foo.wav'] = np.array([0, 1, -2, 3], np.int16)
+    # >>> list(z)
+    # ['foo.wav']
+    # >>> z['foo.wav']
+    # array([ 0,  1, -2,  3], dtype=int16)
+    #
+    # Notice that the sample rate was neither written, no read.
+    # But if you played `foo.wav` it would reflect the 44100 sample rate you specified when
+    # constructing the store.
+    #
+    # You can also see this sample rate if you use a `Wfsr...` store to read the zip file:
+    #
+    # >>> zz = WfsrZipStore(test_zipfile)
+    # >>> z['foo.wav']
+    # (array([ 0,  1, -2,  3], dtype=int16), 44100)
+    """
+
+    # @Sig.from_objs(
+    #         # lambda assert_sr=None: None,
+    #         ZipStore,
+    #         WfSerializationTrans)
+    # def __init__(self, *args, **kwargs):
+    #     # call_forgivingly(super().__init__, self, *args, **kwargs)
+    #     call_forgivingly(ZipStore.__init__, self, *args, **kwargs)
+    #     call_forgivingly(WfSerializationTrans.__init__, self, *args, **kwargs)
 
 
 def _length_and_sr_of_wavs(z):
