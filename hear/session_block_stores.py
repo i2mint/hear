@@ -65,9 +65,7 @@ class SessionBlockStore(LocalPathStore):
         # By tagging the session and block segments in the path_format, we're also enabling the construction of
         # a regular expression that can be used to extract information from our keys.
         # See the get_session_and_block for how it can be used.
-        path_format = os.path.join(
-            channel_data_dir, 's/{session:16d}/b/{block:16d}'
-        )
+        path_format = os.path.join(channel_data_dir, 's/{session:16d}/b/{block:16d}')
         self._path_match_re = match_re_for_fstring(path_format)
 
         super().__init__(path_format, **kwargs)
@@ -130,12 +128,7 @@ inf = float('infinity')
 # TODO: Need to factor out the indexing concern (including the assumption of _key_of_block property existence)
 class BlocksSearchResult:
     def __init__(
-        self,
-        _block_store,
-        bt=-inf,
-        tt=inf,
-        _inclusive=(True, False),
-        _sort_key=None,
+        self, _block_store, bt=-inf, tt=inf, _inclusive=(True, False), _sort_key=None,
     ):
         """
         Object that contains and implements an interval query of a block store.
@@ -228,9 +221,7 @@ class BlocksSearchResult:
                 )
                 # converting into number of samples:
                 # is int best here for rounding? Does not matter in our case at hand since no decimal
-                remove_left_sample_unit = int(
-                    remove_left_ts_unit * samples_per_ts_unit
-                )
+                remove_left_sample_unit = int(remove_left_ts_unit * samples_per_ts_unit)
                 remove_right_sample_unit = int(
                     remove_right_ts_unit * samples_per_ts_unit
                 )
@@ -243,11 +234,7 @@ class BlocksSearchResult:
                     wf = wf[remove_left_sample_unit:]
                 if len(wf) > 0:
                     wf_bt = current_block_ts + remove_left_ts_unit
-                    wf_tt = (
-                        current_block_ts
-                        + wf_len_ts_unit
-                        - remove_right_ts_unit
-                    )
+                    wf_tt = current_block_ts + wf_len_ts_unit - remove_right_ts_unit
                     yield (wf_bt, wf_tt), wf
                 current_block_ts = next(ts_gen)
         except StopIteration:
@@ -280,9 +267,7 @@ class BlockWfStore(DictKeyMap, WfStore):
     ):
         # TODO: Here I construct a WfStore twice. There must be a better way!
         s = WfStore(channel_data_dir, sr)
-        key_of_block = {
-            s.get_session_and_block(key)[1]: key for key in s.__iter__()
-        }
+        key_of_block = {s.get_session_and_block(key)[1]: key for key in s.__iter__()}
         # assert list(key_of_block.keys()) == sorted(key_of_block.keys()), "the blocks are not sorted"
         WfStore.__init__(self, channel_data_dir, sr)
         DictKeyMap.__init__(self, id_of_key=key_of_block)
@@ -332,9 +317,7 @@ class SessionStore(LocalPathStore):
         self._path_match_re = match_re_for_fstring(path_format)
         self.sr = sr
         self.time_units_per_sec = time_units_per_sec
-        self.csv_timestamp_time_units_per_sec = (
-            csv_timestamp_time_units_per_sec
-        )
+        self.csv_timestamp_time_units_per_sec = csv_timestamp_time_units_per_sec
 
     def key_info(self, k):
         """Extract dict of info from parsing file"""
@@ -376,18 +359,14 @@ class ScoopAnnotations:
 
         store = ScoopAnnotationsStore(annotations_dir)
         self._store = store
-        self.annots_df = pd.concat(list(store.values())).sort_values(
-            ['bt', 'tt']
-        )
+        self.annots_df = pd.concat(list(store.values())).sort_values(['bt', 'tt'])
         self.annots_df = self.annots_df.reset_index(drop=True)
 
     def __getitem__(self, k):
         if not isinstance(k, slice):
             k = slice(k)
         df = self.annots_df
-        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(
-            orient='rows'
-        )
+        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(orient='rows')
 
 
 # if __name__ == '__main__':

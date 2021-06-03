@@ -87,9 +87,7 @@ def mk_reader_and_writer(
         def read(k):
             wf, sr_read = sf.read(k, dtype=dtype, always_2d=always_2d)
             if sr != sr_read:
-                raise WrongSampleRate(
-                    f'Sample rate was {sr_read}: Expected {sr}'
-                )
+                raise WrongSampleRate(f'Sample rate was {sr_read}: Expected {sr}')
             return wf
 
     def write(k, v):
@@ -141,9 +139,7 @@ def _random_matrix(
     else:
         interval_length = value_range[1] - value_range[0]
 
-    data = (
-        np.random.rand(n_samples, n_channels) * interval_length
-    ) + value_range[0]
+    data = (np.random.rand(n_samples, n_channels) * interval_length) + value_range[0]
 
     if n_channels == 1:
         data = np.ravel(data)
@@ -161,22 +157,14 @@ def _random_data_and_serialization_params(
 if __name__ == '__main__':
     n_channels, dtype = 1, 'float64'
     read, write = mk_reader_and_writer(
-        sr=44100,
-        channels=n_channels,
-        subtype='FLOAT',
-        format='RAW',
-        dtype=dtype,
+        sr=44100, channels=n_channels, subtype='FLOAT', format='RAW', dtype=dtype,
     )
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
 
     n_channels, dtype = 1, 'int16'
     read, write = mk_reader_and_writer(
-        sr=44100,
-        channels=n_channels,
-        subtype='PCM_16',
-        format='RAW',
-        dtype=dtype,
+        sr=44100, channels=n_channels, subtype='PCM_16', format='RAW', dtype=dtype,
     )
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
@@ -188,9 +176,7 @@ if __name__ == '__main__':
     data = _random_matrix(n_channels=n_channels, dtype=dtype)
     _test_data_write_read(data, writer=write, reader=read)
 
-    n_channels = int(
-        2 ** 10 - 1
-    )  # one more would be too much for format='WAV'
+    n_channels = int(2 ** 10 - 1)  # one more would be too much for format='WAV'
     read, write = mk_reader_and_writer(
         sr=1, channels=n_channels, subtype='FLOAT', format='WAV'
     )

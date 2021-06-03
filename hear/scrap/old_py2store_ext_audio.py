@@ -88,9 +88,7 @@ class WfSrSerializationTrans:
     _read_format = DFLT_FORMAT
     _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
-    def __init__(
-        self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
-    ):
+    def __init__(self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None):
         self._read_format = format
         self._rw_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
 
@@ -181,12 +179,7 @@ class WavSerializationTrans:
     _read_kwargs = dict(dtype=DFLT_DTYPE)
 
     def __init__(
-        self,
-        assert_sr=None,
-        dtype=DFLT_DTYPE,
-        format='WAV',
-        subtype=None,
-        endian=None,
+        self, assert_sr=None, dtype=DFLT_DTYPE, format='WAV', subtype=None, endian=None,
     ):
         if assert_sr is not None:
             assert isinstance(assert_sr, int), 'assert_sr must be an int'
@@ -298,9 +291,7 @@ class PcmSourceSessionBlockStore(MakeMissingDirsStoreMixin, LocalBinaryStore):
     def _id_of_key(self, k):
         raise DeprecationWarning('Deprecated')
         assert len(k) == self.path_depth
-        return super()._id_of_key(
-            self.sep.join(self.path_depth * ['{}']).format(*k)
-        )
+        return super()._id_of_key(self.sep.join(self.path_depth * ['{}']).format(*k))
 
     def _key_of_id(self, _id):
         raise DeprecationWarning('Deprecated')

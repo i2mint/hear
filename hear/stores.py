@@ -62,9 +62,7 @@ class WfSrSerializationTrans:
     # _read_format = DFLT_FORMAT
     # _rw_kwargs = dict(dtype=DFLT_DTYPE, subtype=None, endian=None)
 
-    def __init__(
-        self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None
-    ):
+    def __init__(self, dtype=DFLT_DTYPE, format=DFLT_FORMAT, subtype=None, endian=None):
         self._r_kwargs = dict(dtype=dtype, subtype=subtype, endian=endian)
         self._w_kwargs = dict(format=format, subtype=subtype, endian=endian)
 
@@ -152,9 +150,7 @@ class WfSerializationTrans(WfSrSerializationTrans):
 # TODO: Make this with above elements:
 #  For example, with @WfsrToWfWithSrAssertionTrans.wrapper(assert_sr=None)
 @add_wrapper_method
-class WavSerializationTrans(
-    WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans
-):
+class WavSerializationTrans(WfSrSerializationTrans, WfsrToWfWithSrAssertionTrans):
     r"""A wav serialization/deserialization transformer.
 
     First let's make a very short waveform.
@@ -203,12 +199,7 @@ class WavSerializationTrans(
     """
 
     def __init__(
-        self,
-        assert_sr=None,
-        dtype=DFLT_DTYPE,
-        format='WAV',
-        subtype=None,
-        endian=None,
+        self, assert_sr=None, dtype=DFLT_DTYPE, format='WAV', subtype=None, endian=None,
     ):
         WfsrToWfWithSrAssertionTrans.__init__(self, assert_sr=assert_sr)
         WfSrSerializationTrans.__init__(
@@ -392,9 +383,7 @@ class PcmSourceSessionBlockStore(MakeMissingDirsStoreMixin, LocalBinaryStore):
     def _id_of_key(self, k):
         raise DeprecationWarning('Deprecated')
         assert len(k) == self.path_depth
-        return super()._id_of_key(
-            self.sep.join(self.path_depth * ['{}']).format(*k)
-        )
+        return super()._id_of_key(self.sep.join(self.path_depth * ['{}']).format(*k))
 
     def _key_of_id(self, _id):
         raise DeprecationWarning('Deprecated')
