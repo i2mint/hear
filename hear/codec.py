@@ -31,7 +31,7 @@ class ChunkedEncoder(Encoder):
     frame_to_chk: FrameToChunk
 
     def __call__(self, frames: Frames):
-        return b"".join(map(self.frame_to_chk, frames))
+        return b''.join(map(self.frame_to_chk, frames))
 
 
 first_element = itemgetter(0)
