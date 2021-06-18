@@ -60,7 +60,7 @@ ChkFormat = str  # a str recognized as a struct format
 
 def _chk_format_is_for_single_channel(chk_format):
     """Checks if a chk_format string is meant for a single channel codec"""
-    if chk_format[0] in "@=<>!":
+    if chk_format[0] in '@=<>!':
         chk_format = chk_format[1:]  # remove the byte order character before checking
     return len(chk_format) == 1
 
@@ -102,9 +102,9 @@ class StructCodecSpecs:
         if self.n_channels is None:
             self.n_channels = len(self.chk_format)
         else:
-            assert _chk_format_is_for_single_channel(self.chk_format), (
-                    "if n_channels is given, chk_format needs to be for a single channel"
-                )
+            assert _chk_format_is_for_single_channel(
+                self.chk_format
+            ), 'if n_channels is given, chk_format needs to be for a single channel'
             self.chk_format = self.chk_format * self.n_channels
 
         chk_size_bytes = struct.calcsize(self.chk_format)
@@ -112,8 +112,8 @@ class StructCodecSpecs:
             self.chk_size_bytes = chk_size_bytes
         else:
             assert self.chk_size_bytes == chk_size_bytes, (
-                f"The given chk_size_bytes {self.chk_size_bytes} did not match the "
-                f"inferred (from chk_format) {chk_size_bytes}"
+                f'The given chk_size_bytes {self.chk_size_bytes} did not match the '
+                f'inferred (from chk_format) {chk_size_bytes}'
             )
 
     def frame_to_chk(self, frame):
