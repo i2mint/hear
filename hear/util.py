@@ -58,7 +58,7 @@ num_type_synonyms = [
         'n_bits': 16,
         'n_bytes': 2,
         'numpy': np.int16,
-        'struct': 'h'
+        'struct': 'h',
     },
     {
         'dtype': 'int8',
@@ -67,7 +67,7 @@ num_type_synonyms = [
         'n_bits': 8,
         'n_bytes': 1,
         'numpy': np.int8,
-        'struct': 'b'
+        'struct': 'b',
     },
     {
         'dtype': 'int24',
@@ -85,7 +85,7 @@ num_type_synonyms = [
         'n_bits': 32,
         'n_bytes': 4,
         'numpy': np.int32,
-        'struct': 'i'
+        'struct': 'i',
     },
     {
         'dtype': 'uint8',
@@ -94,7 +94,7 @@ num_type_synonyms = [
         'n_bits': 8,
         'n_bytes': 1,
         'numpy': np.uint8,
-        'struct': 'B'
+        'struct': 'B',
     },
     {
         'dtype': 'float32',
@@ -103,7 +103,7 @@ num_type_synonyms = [
         'n_bits': 32,
         'n_bytes': 4,
         'numpy': np.float32,
-        'struct': 'f'
+        'struct': 'f',
     },
     {
         'dtype': 'float64',
@@ -112,7 +112,7 @@ num_type_synonyms = [
         'n_bits': 64,
         'n_bytes': 8,
         'numpy': np.float64,
-        'struct': 'd'
+        'struct': 'd',
     },
 ]
 
