@@ -58,6 +58,7 @@ num_type_synonyms = [
         'n_bits': 16,
         'n_bytes': 2,
         'numpy': np.int16,
+        'struct': 'h'
     },
     {
         'dtype': 'int8',
@@ -66,6 +67,7 @@ num_type_synonyms = [
         'n_bits': 8,
         'n_bytes': 1,
         'numpy': np.int8,
+        'struct': 'b'
     },
     {
         'dtype': 'int24',
@@ -74,6 +76,7 @@ num_type_synonyms = [
         'n_bits': 24,
         'n_bytes': 3,
         'numpy': None,
+        'struct': None,
     },
     {
         'dtype': 'int32',
@@ -82,6 +85,7 @@ num_type_synonyms = [
         'n_bits': 32,
         'n_bytes': 4,
         'numpy': np.int32,
+        'struct': 'i'
     },
     {
         'dtype': 'uint8',
@@ -90,6 +94,7 @@ num_type_synonyms = [
         'n_bits': 8,
         'n_bytes': 1,
         'numpy': np.uint8,
+        'struct': 'B'
     },
     {
         'dtype': 'float32',
@@ -98,6 +103,7 @@ num_type_synonyms = [
         'n_bits': 32,
         'n_bytes': 4,
         'numpy': np.float32,
+        'struct': 'f'
     },
     {
         'dtype': 'float64',
@@ -106,6 +112,7 @@ num_type_synonyms = [
         'n_bits': 64,
         'n_bytes': 8,
         'numpy': np.float64,
+        'struct': 'd'
     },
 ]
 
@@ -120,7 +127,7 @@ def num_type_for(num, num_sys='n_bits', target_num_sys='soundfile'):
 
     >>> num_type_for(16, "n_bits", "soundfile")
     'PCM_16'
-    >>> num_type_for(np.array([1.0, 2.0, 3.0]).dtype, "numpy", "soundfile")
+    >>> num_type_for(np.array([1.0, 2.0, 3.0]).dtype, "numpy", "struct")
     'PCM_24'
 
     Tip: Use with `functools.partial` when you have some fix translation endpoints.
