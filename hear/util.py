@@ -127,7 +127,7 @@ def num_type_for(num, num_sys='n_bits', target_num_sys='soundfile'):
 
     >>> num_type_for(16, "n_bits", "soundfile")
     'PCM_16'
-    >>> num_type_for(np.array([1.0, 2.0, 3.0]).dtype, "numpy", "struct")
+    >>> num_type_for(np.array([1.0, 2.0, 3.0]).dtype, "numpy", "soundfile")
     'PCM_24'
 
     Tip: Use with `functools.partial` when you have some fix translation endpoints.
