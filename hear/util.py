@@ -31,6 +31,13 @@ sample_width_for_soundfile_subtype = {
     'PCM_U8': 1,
 }
 
+dflt_subtype_for_sample_width = {
+    2: 'PCM_16',
+    3: 'PCM_24',
+    4: 'PCM_32',
+    8: 'DOUBLE'
+}
+
 # soundfile_signature not used yet, but intended for a future version of this module, that will use minting
 # and signature injection instead of long copy pastes of
 soundfile_signature = dict(

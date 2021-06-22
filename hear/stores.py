@@ -35,7 +35,7 @@ class PcmSerializationTrans:
         subtype='PCM_16',
         endian=None,
     ):
-        assert isinstance(sr, int), 'assert_sr must be an int'
+        assert isinstance(sr, int), 'sr must be an int'
         self.sr = sr
         self._rw_kwargs = dict(
             samplerate=sr,
