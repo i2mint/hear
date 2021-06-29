@@ -85,7 +85,7 @@ class SessionBlockStore(LocalPathStore):
 
 class WfStore(SessionBlockStore):
     def __init__(self, channel_data_dir, sr=None):
-        super().__init__(channel_data_dir=channel_data_dir, sr=sr, read='b')
+        super().__init__(channel_data_dir=channel_data_dir, sr=sr, mode='b')
 
     def __getitem__(self, k):
         block_bytes = super().__getitem__(k)  # the raw bytes
