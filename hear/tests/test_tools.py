@@ -40,7 +40,7 @@ def audio_segment_demo_test():
     # If you want to get your waveform in int16 (as the original), you'll need
     # to specify your own `src_to_wfsr` function.
     # One way to do this is to "curry" soundfile.read to your needs.
-    read_int16_wfsr = partial(sf.read, dtype="int16")
+    read_int16_wfsr = partial(sf.read, dtype='int16')
     segs = AudioSegments(src_to_wfsr=read_int16_wfsr)
     # See that now you get the original waveform back!
     np.all(segs[file_0123456789_wav] == wf_0123456789)
@@ -81,7 +81,9 @@ def audio_segment_demo_test():
     # Ah! you were expecting [3, 4, 5, 6], and you are right to.
     # But computers, and with their floats, fail to represent real numbers.
     # A bit more on the top time and we get it:
-    wf = unix_segs[file_0123456789_wav, 18123.450000347224, (18123.450000810186 + 2e-12)]
+    wf = unix_segs[
+        file_0123456789_wav, 18123.450000347224, (18123.450000810186 + 2e-12)
+    ]
     assert np.all(wf, [3, 4, 5, 6])
 
     # So beware when using floats for indexing, if it matters whether you loose a
@@ -99,4 +101,3 @@ def audio_segment_demo_test():
     # Instead, you should just retrieve the whole waveform and index it directly
     wf = samples_segs[file_0123456789_wav][3:7]
     assert np.all(wf, [3, 4, 5, 6])
-
