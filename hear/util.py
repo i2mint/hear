@@ -3,8 +3,8 @@ hear utilities
 """
 from typing import Sequence, Union, Any, Iterable, Callable
 import numpy as np
+from numbers import Number
 
-Number = Union[int, float, np.number]
 Sample = Number
 Waveform = Sequence[Sample]
 
