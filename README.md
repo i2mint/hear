@@ -1,6 +1,6 @@
 # hear
-https://github.com/otosense/hear
 
+Easy access to sound data.
 
 To install:	```pip install hear```
 
