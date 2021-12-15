@@ -1,6 +1,6 @@
 # hear
 
-Easy access to sound data.
+Easy access to audio data.
 
 To install:	```pip install hear```
 
