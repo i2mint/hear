@@ -11,27 +11,27 @@ import soundfile as sf
 
 # from py2store.mint import wraps, _empty_func
 
-DFLT_DTYPE = "int16"
-DFLT_FORMAT = "WAV"
+DFLT_DTYPE = 'int16'
+DFLT_FORMAT = 'WAV'
 DFLT_N_CHANNELS = 1
 
 # TODO: Do some validation and smart defaults with these
 dtype_from_sample_width = {
-    1: "int16",
-    2: "int16",
-    3: "int32",
-    4: "int32",
-    8: "float64",
+    1: 'int16',
+    2: 'int16',
+    3: 'int32',
+    4: 'int32',
+    8: 'float64',
 }
 
 sample_width_for_soundfile_subtype = {
-    "DOUBLE": 8,
-    "FLOAT": 4,
-    "G721_32": 4,
-    "PCM_16": 2,
-    "PCM_24": 3,
-    "PCM_32": 4,
-    "PCM_U8": 1,
+    'DOUBLE': 8,
+    'FLOAT': 4,
+    'G721_32': 4,
+    'PCM_16': 2,
+    'PCM_24': 3,
+    'PCM_32': 4,
+    'PCM_U8': 1,
 }
 
 # soundfile_signature not used yet, but intended for a future version of this module, that will use minting
@@ -58,11 +58,11 @@ class PcmSerializationTrans:
         sr,
         channels=DFLT_N_CHANNELS,
         dtype=DFLT_DTYPE,
-        format="RAW",
-        subtype="PCM_16",
+        format='RAW',
+        subtype='PCM_16',
         endian=None,
     ):
-        assert isinstance(sr, int), "assert_sr must be an int"
+        assert isinstance(sr, int), 'assert_sr must be an int'
         self.sr = sr
         self._rw_kwargs = dict(
             samplerate=sr,
@@ -125,7 +125,7 @@ class WfSerializationTrans(WfSrSerializationTrans):
         wf, sr = super()._obj_of_data(data)
         if self.assert_sr is not None and sr != self.assert_sr:
             raise SampleRateAssertionError(
-                f"{self.assert_sr} expected but I encountered {sr}"
+                f'{self.assert_sr} expected but I encountered {sr}'
             )
         return wf
 
@@ -175,19 +175,14 @@ class WavSerializationTrans:
 
 
     """
-    _rw_kwargs = dict(format="WAV", subtype=None, endian=None)
+    _rw_kwargs = dict(format='WAV', subtype=None, endian=None)
     _read_kwargs = dict(dtype=DFLT_DTYPE)
 
     def __init__(
-        self,
-        assert_sr=None,
-        dtype=DFLT_DTYPE,
-        format="WAV",
-        subtype=None,
-        endian=None,
+        self, assert_sr=None, dtype=DFLT_DTYPE, format='WAV', subtype=None, endian=None,
     ):
         if assert_sr is not None:
-            assert isinstance(assert_sr, int), "assert_sr must be an int"
+            assert isinstance(assert_sr, int), 'assert_sr must be an int'
         self.assert_sr = assert_sr
         self._rw_kwargs = dict(format=format, subtype=subtype, endian=endian)
         self._read_kwargs = dict(dtype=dtype)
@@ -199,7 +194,7 @@ class WavSerializationTrans:
                 self.assert_sr is not None
             ):  # Putting None check here because less common, so more efficient on avg
                 raise SampleRateAssertionError(
-                    f"sr was {sr}, should be {self.assert_sr}"
+                    f'sr was {sr}, should be {self.assert_sr}'
                 )
         return wf
 
@@ -224,7 +219,7 @@ class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
         assert_sr=None,
         max_levels=None,
         dtype=DFLT_DTYPE,
-        format="WAV",
+        format='WAV',
         subtype=None,
         endian=None,
     ):
@@ -245,7 +240,7 @@ from py2store import FilesOfZip, filt_iter
 
 
 def has_wav_extension(string):
-    return string.endswith(".wav") and not string.startswith("__MACOSX/")
+    return string.endswith('.wav') and not string.startswith('__MACOSX/')
 
 
 @filt_iter(filt=has_wav_extension)
@@ -277,11 +272,11 @@ def _length_and_sr_of_wavs(z):
 
     def gen():
         for k, (wf, sr) in z.items():
-            yield {"file": k, "n_samples": len(wf), "sr": sr}
+            yield {'file': k, 'n_samples': len(wf), 'sr': sr}
 
     df = pd.DataFrame(list(gen()))
-    df = df.set_index("file")
-    df["duration_s"] = df["n_samples"] / df["sr"]
+    df = df.set_index('file')
+    df['duration_s'] = df['n_samples'] / df['sr']
     return df
 
 
@@ -295,11 +290,11 @@ class PcmSourceSessionBlockStore(LocalBinaryStore):
     path_depth = 3
 
     def _id_of_key(self, k):
-        raise DeprecationWarning("Deprecated")
+        raise DeprecationWarning('Deprecated')
         assert len(k) == self.path_depth
-        return super()._id_of_key(self.sep.join(self.path_depth * ["{}"]).format(*k))
+        return super()._id_of_key(self.sep.join(self.path_depth * ['{}']).format(*k))
 
     def _key_of_id(self, _id):
-        raise DeprecationWarning("Deprecated")
+        raise DeprecationWarning('Deprecated')
         key = super()._key_of_id(_id)
         return tuple(key.split(self.sep))
