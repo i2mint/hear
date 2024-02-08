@@ -366,7 +366,7 @@ class ScoopAnnotations:
         if not isinstance(k, slice):
             k = slice(k)
         df = self.annots_df
-        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(orient='rows')
+        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(orient='records')
 
 
 # if __name__ == '__main__':
