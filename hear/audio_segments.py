@@ -1,7 +1,8 @@
 """
 Accessing segments of audio.
 """
-from typing import Callable, Any, Tuple
+from typing import Any, Tuple
+from collections.abc import Callable
 from functools import lru_cache, wraps, partial
 from dataclasses import dataclass
 
@@ -10,7 +11,7 @@ import soundfile as sf
 from hear.util import Number, Waveform
 
 AudioSource, BT, TT, Sref, AudioSegmentKey = Any, Any, Any, Any, Any
-NormalizedSegmentKey = Tuple[Sref, BT, TT]
+NormalizedSegmentKey = tuple[Sref, BT, TT]
 SegmentKeyNormalizer = Callable[[AudioSegmentKey], NormalizedSegmentKey]
 
 dflt_key_to_src_bt_tt: SegmentKeyNormalizer
@@ -132,7 +133,7 @@ def wf_func_to_wfsr_func(wf_func=None, *, sr):
     return wfsr_func
 
 
-class AffineConverter(object):
+class AffineConverter:
     """
     Getting a callable that will perform an affine conversion.
     Note, it does it as

@@ -1,7 +1,8 @@
 """
 hear utilities
 """
-from typing import Sequence, Union, Any, Iterable, Callable
+from typing import Union, Any
+from collections.abc import Sequence, Iterable, Callable
 import numpy as np
 from numbers import Number
 

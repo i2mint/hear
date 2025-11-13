@@ -84,7 +84,7 @@ from typing import Optional
 class WfsrToWfWithSrAssertionTrans:
     """Asserts a fixed specified sr (if given) and returns only the wf part of the (wf, sr) data"""
 
-    def __init__(self, assert_sr: Optional[int] = None):
+    def __init__(self, assert_sr: int | None = None):
         assert assert_sr is None or isinstance(assert_sr, int), (
             f'assert_sr must be None or an integer. Was ' f'{assert_sr}'
         )
