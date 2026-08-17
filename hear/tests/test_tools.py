@@ -1,4 +1,5 @@
 """Test tools.py"""
+
 from functools import partial
 import soundfile as sf
 import numpy as np
@@ -40,7 +41,7 @@ def audio_segment_demo_test():
     # If you want to get your waveform in int16 (as the original), you'll need
     # to specify your own `src_to_wfsr` function.
     # One way to do this is to "curry" soundfile.read to your needs.
-    read_int16_wfsr = partial(sf.read, dtype='int16')
+    read_int16_wfsr = partial(sf.read, dtype="int16")
     segs = AudioSegments(src_to_wfsr=read_int16_wfsr)
     # See that now you get the original waveform back!
     np.all(segs[file_0123456789_wav] == wf_0123456789)

@@ -1,6 +1,7 @@
 """
 Accessing segments of audio.
 """
+
 from typing import Any, Tuple
 from collections.abc import Callable
 from functools import lru_cache, wraps, partial
@@ -97,7 +98,10 @@ class AudioSegments:
 
 @lru_cache(maxsize=1)
 def src_to_wf_and_indexer(
-    src: AudioSource, index_to_seconds_scale, index_to_seconds_offset, src_to_wfsr,
+    src: AudioSource,
+    index_to_seconds_scale,
+    index_to_seconds_offset,
+    src_to_wfsr,
 ):
     wf, sr = src_to_wfsr(src)
     indexer = AffineConverter(

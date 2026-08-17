@@ -1,6 +1,7 @@
 """
 hear utilities
 """
+
 from typing import Union, Any
 from collections.abc import Sequence, Iterable, Callable
 import numpy as np
@@ -9,30 +10,30 @@ from numbers import Number
 Sample = Number
 Waveform = Sequence[Sample]
 
-DFLT_DTYPE = 'int16'
-DFLT_FORMAT = 'WAV'
+DFLT_DTYPE = "int16"
+DFLT_FORMAT = "WAV"
 DFLT_N_CHANNELS = 1
 
 # TODO: Do some validation and smart defaults with these
 dtype_from_sample_width = {
-    1: 'int16',
-    2: 'int16',
-    3: 'int32',
-    4: 'int32',
-    8: 'float64',
+    1: "int16",
+    2: "int16",
+    3: "int32",
+    4: "int32",
+    8: "float64",
 }
 
 sample_width_for_soundfile_subtype = {
-    'DOUBLE': 8,
-    'FLOAT': 4,
-    'G721_32': 4,
-    'PCM_16': 2,
-    'PCM_24': 3,
-    'PCM_32': 4,
-    'PCM_U8': 1,
+    "DOUBLE": 8,
+    "FLOAT": 4,
+    "G721_32": 4,
+    "PCM_16": 2,
+    "PCM_24": 3,
+    "PCM_32": 4,
+    "PCM_U8": 1,
 }
 
-dflt_subtype_for_sample_width = {2: 'PCM_16', 3: 'PCM_24', 4: 'PCM_32', 8: 'DOUBLE'}
+dflt_subtype_for_sample_width = {2: "PCM_16", 3: "PCM_24", 4: "PCM_32", 8: "DOUBLE"}
 
 # soundfile_signature not used yet, but intended for a future version of this module, that will use minting
 # and signature injection instead of long copy pastes of
@@ -55,72 +56,72 @@ class SampleRateMissing(SampleRateError):
 
 num_type_synonyms = [
     {
-        'dtype': 'int16',
-        'soundfile': 'PCM_16',
-        'pyaudio': 'paInt16',
-        'n_bits': 16,
-        'n_bytes': 2,
-        'numpy': np.int16,
-        'struct': 'h',
+        "dtype": "int16",
+        "soundfile": "PCM_16",
+        "pyaudio": "paInt16",
+        "n_bits": 16,
+        "n_bytes": 2,
+        "numpy": np.int16,
+        "struct": "h",
     },
     {
-        'dtype': 'int8',
-        'soundfile': 'PCM_S8',
-        'pyaudio': 'paInt8',
-        'n_bits': 8,
-        'n_bytes': 1,
-        'numpy': np.int8,
-        'struct': 'b',
+        "dtype": "int8",
+        "soundfile": "PCM_S8",
+        "pyaudio": "paInt8",
+        "n_bits": 8,
+        "n_bytes": 1,
+        "numpy": np.int8,
+        "struct": "b",
     },
     {
-        'dtype': 'int24',
-        'soundfile': 'PCM_24',
-        'pyaudio': 'paInt24',
-        'n_bits': 24,
-        'n_bytes': 3,
-        'numpy': None,
-        'struct': None,
+        "dtype": "int24",
+        "soundfile": "PCM_24",
+        "pyaudio": "paInt24",
+        "n_bits": 24,
+        "n_bytes": 3,
+        "numpy": None,
+        "struct": None,
     },
     {
-        'dtype': 'int32',
-        'soundfile': 'PCM_32',
-        'pyaudio': 'paInt32',
-        'n_bits': 32,
-        'n_bytes': 4,
-        'numpy': np.int32,
-        'struct': 'i',
+        "dtype": "int32",
+        "soundfile": "PCM_32",
+        "pyaudio": "paInt32",
+        "n_bits": 32,
+        "n_bytes": 4,
+        "numpy": np.int32,
+        "struct": "i",
     },
     {
-        'dtype': 'uint8',
-        'soundfile': 'PCM_U8',
-        'pyaudio': 'paUInt8',
-        'n_bits': 8,
-        'n_bytes': 1,
-        'numpy': np.uint8,
-        'struct': 'B',
+        "dtype": "uint8",
+        "soundfile": "PCM_U8",
+        "pyaudio": "paUInt8",
+        "n_bits": 8,
+        "n_bytes": 1,
+        "numpy": np.uint8,
+        "struct": "B",
     },
     {
-        'dtype': 'float32',
-        'soundfile': 'FLOAT',
-        'pyaudio': 'paFloat32',
-        'n_bits': 32,
-        'n_bytes': 4,
-        'numpy': np.float32,
-        'struct': 'f',
+        "dtype": "float32",
+        "soundfile": "FLOAT",
+        "pyaudio": "paFloat32",
+        "n_bits": 32,
+        "n_bytes": 4,
+        "numpy": np.float32,
+        "struct": "f",
     },
     {
-        'dtype': 'float64',
-        'soundfile': 'DOUBLE',
-        'pyaudio': None,
-        'n_bits': 64,
-        'n_bytes': 8,
-        'numpy': np.float64,
-        'struct': 'd',
+        "dtype": "float64",
+        "soundfile": "DOUBLE",
+        "pyaudio": None,
+        "n_bits": 64,
+        "n_bytes": 8,
+        "numpy": np.float64,
+        "struct": "d",
     },
 ]
 
 
-def num_type_for(num, num_sys='n_bits', target_num_sys='soundfile'):
+def num_type_for(num, num_sys="n_bits", target_num_sys="soundfile"):
     """Translate from one (sample width) number type to another.
 
     :param num:
@@ -148,6 +149,6 @@ def num_type_for(num, num_sys='n_bits', target_num_sys='soundfile'):
                 return d[target_num_sys]
             else:
                 raise ValueError(
-                    f'Did not find any {target_num_sys} entry for {num_sys}={num}'
+                    f"Did not find any {target_num_sys} entry for {num_sys}={num}"
                 )
-    raise ValueError(f'Did not find any entry for {num_sys}={num}')
+    raise ValueError(f"Did not find any entry for {num_sys}={num}")

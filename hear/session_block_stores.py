@@ -2,6 +2,7 @@
 Stores that specialize in block storage;
 That is, where continuous signal is stored over multiple blocks of data.
 """
+
 from sortedcontainers import SortedList
 from collections.abc import Iterable, Mapping
 from functools import lru_cache, cached_property
@@ -34,11 +35,11 @@ class LocalPathStore(ReadOnlyMixin, RelativePathFormatStore):
 def wf_of_block_bytes(block_bytes, sr):
     return sf.read(
         BytesIO(block_bytes),
-        dtype='int16',
+        dtype="int16",
         channels=1,
         samplerate=sr,
-        format='RAW',
-        subtype='PCM_16',
+        format="RAW",
+        subtype="PCM_16",
     )[0]
 
 
@@ -53,14 +54,14 @@ class SessionBlockStore(LocalPathStore):
     def __init__(self, channel_data_dir, sr=None, **kwargs):
         # figuring out the sample rate
         channel_store = LocalPathStore(channel_data_dir)
-        if 'config.json' in channel_store:
-            config = json.loads(channel_store['config.json'])
-            self.sr = int(config.get('sr', sr))
+        if "config.json" in channel_store:
+            config = json.loads(channel_store["config.json"])
+            self.sr = int(config.get("sr", sr))
         else:
             self.sr = sr
-        assert (
-            self.sr is not None
-        ), "I couldn't figure out the sample rate. Should be in a config.json file or given explicitly as argument"
+        assert self.sr is not None, (
+            "I couldn't figure out the sample rate. Should be in a config.json file or given explicitly as argument"
+        )
 
         # Here we make our path inclusion condition more specific, in order to avoid including any files that
         # are not "block" files that are compliant with the folder structure.
@@ -69,7 +70,7 @@ class SessionBlockStore(LocalPathStore):
         # By tagging the session and block segments in the path_format, we're also enabling the construction of
         # a regular expression that can be used to extract information from our keys.
         # See the get_session_and_block for how it can be used.
-        path_format = os.path.join(channel_data_dir, 's/{session:16d}/b/{block:16d}')
+        path_format = os.path.join(channel_data_dir, "s/{session:16d}/b/{block:16d}")
         self._path_match_re = match_re_for_fstring(path_format)
 
         super().__init__(path_format, **kwargs)
@@ -80,8 +81,8 @@ class SessionBlockStore(LocalPathStore):
         if m:
             d = m.groupdict()
             return (
-                int_if_not_none(d.get('session', None)),
-                int_if_not_none(d.get('block', None)),
+                int_if_not_none(d.get("session", None)),
+                int_if_not_none(d.get("block", None)),
             )
         else:
             return None, None
@@ -89,7 +90,7 @@ class SessionBlockStore(LocalPathStore):
 
 class WfStore(SessionBlockStore):
     def __init__(self, channel_data_dir, sr=None):
-        super().__init__(channel_data_dir=channel_data_dir, sr=sr, mode='b')
+        super().__init__(channel_data_dir=channel_data_dir, sr=sr, mode="b")
 
     def __getitem__(self, k):
         block_bytes = super().__getitem__(k)  # the raw bytes
@@ -102,8 +103,8 @@ class TxyzStore(SessionBlockStore):
         import pandas as pd
 
         return pd.DataFrame(
-            list(map(json.loads, filter(None, data.split('\n'))))
-        ).set_index('timestamp')
+            list(map(json.loads, filter(None, data.split("\n"))))
+        ).set_index("timestamp")
 
     def __init__(self, channel_data_dir, sr=None):
         super().__init__(channel_data_dir=channel_data_dir, sr=sr)
@@ -125,14 +126,19 @@ class DictKeyMap:
         return self.__key_of_id(super()._key_of_id(_id))
 
 
-inf = float('infinity')
+inf = float("infinity")
 
 
 # TODO: The class below isn't general at all. It assumes, for instance microseconds blocks.
 # TODO: Need to factor out the indexing concern (including the assumption of _key_of_block property existence)
 class BlocksSearchResult:
     def __init__(
-        self, _block_store, bt=-inf, tt=inf, _inclusive=(True, False), _sort_key=None,
+        self,
+        _block_store,
+        bt=-inf,
+        tt=inf,
+        _inclusive=(True, False),
+        _sort_key=None,
     ):
         """
         Object that contains and implements an interval query of a block store.
@@ -172,14 +178,14 @@ class BlocksSearchResult:
 
     @cached_property
     def _key_of_block(self):
-        if hasattr(self._block_store, '_key_of_block'):
+        if hasattr(self._block_store, "_key_of_block"):
             return self._block_store._key_of_block
         else:
             return SortedList(self._block_store.__iter__(), self._sort_key)
 
     @cached_property
     def intersecting_blocks(self):
-        """ Iterator of blocks that CONTAIN the [bt, tt) range """
+        """Iterator of blocks that CONTAIN the [bt, tt) range"""
         # TODO: Figure out the most efficient way to do this
         bottom_idx = self._key_of_block.bisect_right(self.bt)
         if bottom_idx > 0:
@@ -197,7 +203,7 @@ class BlocksSearchResult:
         return self.items()
 
     def blocks_intersecting_bt_tt(self):
-        """ Iterator of blocks that CONTAIN the [bt, tt) range """
+        """Iterator of blocks that CONTAIN the [bt, tt) range"""
         # TODO: Figure out the most efficient way to do this
         bottom_idx = self._key_of_block.bisect_right(self.bt)
         if bottom_idx > 0:
@@ -209,7 +215,7 @@ class BlocksSearchResult:
 
     def items(self):
         samples_per_ts_unit = self.sr / self.time_units_per_sec
-        assert self.bt < self.tt, 'you entered a bt >= tt'
+        assert self.bt < self.tt, "you entered a bt >= tt"
 
         ts_gen = iter(self.intersecting_blocks)
         # getting the first block
@@ -299,9 +305,9 @@ class SessionStore(LocalPathStore):
         session_dir,
         time_units_per_sec=DFLT_TIME_UNITS_PER_SEC,
         csv_timestamp_time_units_per_sec=int(1e3),
-        rel_path_format='{session:13d}/t/tags{csv_timestamp:13d}.csv',
+        rel_path_format="{session:13d}/t/tags{csv_timestamp:13d}.csv",
         sr=None,
-        **kwargs
+        **kwargs,
     ):
         """
         A store for sessions folders.
@@ -343,7 +349,7 @@ class ScoopAnnotationsStore(SessionStore):
     def __getitem__(self, k):
         v = super().__getitem__(k)
         df = self.df_of_csv(v)
-        csv_timestamp = self.key_info(k).get('csv_timestamp', None)
+        csv_timestamp = self.key_info(k).get("csv_timestamp", None)
         if csv_timestamp is None:
             raise ValueError("Couldn't parse out the csv's timestamp.")
         csv_timestamp = int(
@@ -351,9 +357,9 @@ class ScoopAnnotationsStore(SessionStore):
             * self.time_units_per_sec
             / self.csv_timestamp_time_units_per_sec
         )
-        df['bt'] = csv_timestamp + df['bt'] * self.time_units_per_sec
-        df['tt'] = csv_timestamp + df['tt'] * self.time_units_per_sec
-        df = df.sort_values(['bt', 'tt'])
+        df["bt"] = csv_timestamp + df["bt"] * self.time_units_per_sec
+        df["tt"] = csv_timestamp + df["tt"] * self.time_units_per_sec
+        df = df.sort_values(["bt", "tt"])
         return df
 
 
@@ -363,14 +369,14 @@ class ScoopAnnotations:
 
         store = ScoopAnnotationsStore(annotations_dir)
         self._store = store
-        self.annots_df = pd.concat(list(store.values())).sort_values(['bt', 'tt'])
+        self.annots_df = pd.concat(list(store.values())).sort_values(["bt", "tt"])
         self.annots_df = self.annots_df.reset_index(drop=True)
 
     def __getitem__(self, k):
         if not isinstance(k, slice):
             k = slice(k)
         df = self.annots_df
-        return df[(df['bt'] >= k.start) & (df['tt'] < k.stop)].to_dict(orient='records')
+        return df[(df["bt"] >= k.start) & (df["tt"] < k.stop)].to_dict(orient="records")
 
 
 # if __name__ == '__main__':
