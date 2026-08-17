@@ -2,6 +2,13 @@
 Useful stores (dols; Data Object Layers) for audio storage management.
 """
 from io import BytesIO
+
+# NOTE: `LocalBinaryStore` has no `dol` equivalent and is deliberately still
+# sourced from py2store. It is a path-*format* store -- its signature is
+# `(path_format, max_levels=None)`, where `path_format` may carry `{}` fields.
+# `dol.Files` is the nearest relative but takes a plain rootdir, so swapping
+# would be an API change, not a rename. The rest of this module's py2store
+# imports were moved to dol, where the objects are literally the same ones.
 from py2store.stores.local_store import LocalBinaryStore
 from dol.trans import add_wrapper_method
 from dol.signatures import Sig, call_forgivingly
@@ -245,8 +252,7 @@ class WavLocalFileStore(WavSerializationTrans, LocalBinaryStore):
 
 WavLocalFileStore2 = WavLocalFileStore  # back-compatibility alias
 
-from py2store.slib.s_zipfile import FilesOfZip, ZipStore
-from dol import filt_iter
+from dol import FilesOfZip, ZipStore, filt_iter
 
 
 def has_wav_extension(string):
@@ -372,7 +378,7 @@ def _length_and_sr_of_wavs(z):
     return df
 
 
-from py2store.stores.local_store import MakeMissingDirsStoreMixin
+from dol import MakeMissingDirsStoreMixin
 import os
 
 

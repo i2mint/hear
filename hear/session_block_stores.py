@@ -13,8 +13,12 @@ from math import ceil
 
 # from ocore.utils import utime
 
+from dol.mixins import ReadOnlyMixin, IterBasedSizedContainerMixin
+
+# NOTE: `RelativePathFormatStore` and `match_re_for_fstring` have no `dol`
+# equivalent (both are absent from dol entirely), so they stay on py2store.
+# The mixins above did move: py2store was only re-exporting dol's objects.
 from py2store.stores.local_store import RelativePathFormatStore
-from py2store.mixins import ReadOnlyMixin, IterBasedSizedContainerMixin
 from py2store.parse_format import match_re_for_fstring
 
 DFLT_TIME_UNITS_PER_SEC = int(1e6)
