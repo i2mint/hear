@@ -1,15 +1,20 @@
 name: Continuous Integration (uv)
 # MIGRATION NOTE: PyPI auth changed: set secrets.PYPI_PASSWORD to a PyPI API token (uv publish uses UV_PUBLISH_TOKEN, mapped from PYPI_PASSWORD)
 #
-# WHY THIS FILE WAS NEVER EXERCISED BEFORE:
-# GitHub Actions honours [skip ci] natively -- when the head commit of a push
-# carries it, no workflow run is created at all. Every push that reached this
-# repo's default branch since the workflow was added had [skip ci] on its head
-# commit (the old CI's own auto-commit used it, and later manual commits copied
-# it), so this repo had zero workflow runs despite the workflow reporting
-# "active". Nothing here has ever been verified by automation. Keep [skip ci]
-# off ordinary commits; the publish job below is the one place it belongs, to
-# stop its own auto-commit from re-triggering the pipeline.
+# ABOUT THE SKIP MARKER USED IN THE `if:` CONDITIONS BELOW:
+# GitHub Actions honours the skip-ci commit marker natively -- when the head
+# commit of a push carries it, no workflow run is created at all. The publish
+# job's own auto-commit sets it deliberately, so the pipeline does not
+# re-trigger itself. Keep it off ordinary commits, and out of squash-merge
+# messages: a merge whose message carries it produces no run, hence no release.
+#
+# If you are auditing run history: the Actions API reporting no runs for this
+# repo is GitHub's 90-day run retention, NOT an absence of CI. The previous
+# workflow ran and published repeatedly. Releases 0.1.16 through 0.1.20 on PyPI
+# were each uploaded by it, seconds before its matching "**CI** Formatted code +
+# Updated version number and documentation" auto-commit landed on the default
+# branch -- 21 such commits between 2021-05-13 and 2024-02-08. Tag 0.1.20 and
+# the gh-pages branch both point at the last of them.
 on: [push, pull_request]
 
 # Note: Environment variables (PROJECT_NAME and vars from [tool.wads.ci.env])
