@@ -198,7 +198,8 @@ linux = [
     "sudo apt-get install -y libsndfile1 libsndfile1-dev",
 ]
 macos = "brew install libsndfile"
-windows = "echo soundfile ships a bundled libsndfile in its Windows wheels; no system install needed"
+# windows: soundfile ships a bundled libsndfile in its wheels, so nothing is installed (wads
+# verifies any declared install with the check above, which cannot pass before the Python deps).
 
 [tool.wads.ops.gcc]
 description = "GCC - C toolchain, needed when a dependency has no wheel and builds from source"
@@ -215,4 +216,4 @@ linux = [
     "sudo apt-get install -y gcc",
 ]
 macos = "echo clang ships with the macOS runner Command Line Tools; no install needed"
-windows = "echo MSVC build tools ship with the Windows runner; no install needed"
+# windows: the MSVC build tools ship with the runner, so nothing is installed.
